@@ -1,0 +1,19 @@
+# Shell-capable debug variant: the production agent binary on a digest-pinned Wolfi base.
+ARG PRODUCTION_IMAGE=mohankrishna999/jaeger-agent:1.62.0-patched-v4
+ARG DEBUG_IMAGE=cgr.dev/chainguard/wolfi-base:latest@sha256:360896efb0753a5701c48f860e17130c205eae5a264797aa3e7ea126ee2923a7
+
+FROM ${PRODUCTION_IMAGE} AS production
+
+FROM ${DEBUG_IMAGE}
+ARG IMAGE_VERSION=1.62.0-patched-v4
+
+LABEL org.opencontainers.image.title="jaeger-agent-debug" \
+      org.opencontainers.image.version="${IMAGE_VERSION}-debug" \
+      org.opencontainers.image.licenses="Apache-2.0"
+
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+COPY --from=production /go/bin/agent-linux /go/bin/agent-linux
+
+USER 65532:65532
+EXPOSE 5775/udp 5778/tcp 6831/udp 6832/udp 14271/tcp
+ENTRYPOINT ["/go/bin/agent-linux"]

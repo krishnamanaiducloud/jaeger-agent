@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: jaeger-agent
+  labels:
+    app.kubernetes.io/name: jaeger-agent
+    app.kubernetes.io/component: agent
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: jaeger-agent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: jaeger-agent
+        app.kubernetes.io/component: agent
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: jaeger-agent
+          image: docker.io/mohankrishna999/jaeger-agent:1.62.0-patched-v4
+          imagePullPolicy: IfNotPresent
+          args:
+            # Point this at the collector gRPC endpoint for your environment.
+            - --reporter.grpc.host-port=jaeger-collector:14250
+          ports:
+            - name: zk-compact-trft
+              containerPort: 5775
+              protocol: UDP
+            - name: config-rest
+              containerPort: 5778
+              protocol: TCP
+            - name: jg-compact-trft
+              containerPort: 6831
+              protocol: UDP
+            - name: jg-binary-trft
+              containerPort: 6832
+              protocol: UDP
+            - name: admin-http
+              containerPort: 14271
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: admin-http
+          livenessProbe:
+            httpGet:
+              path: /
+              port: admin-http
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL

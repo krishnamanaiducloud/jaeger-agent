@@ -1,0 +1,62 @@
+name: Container security
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  pull_request:
+    paths:
+      - Dockerfile
+      - Dockerfile-debug
+      - build/**
+      - .github/workflows/container-security.yml
+  push:
+    branches:
+      - main
+    paths:
+      - Dockerfile
+      - Dockerfile-debug
+      - build/**
+      - .github/workflows/container-security.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-scan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7.0.1
+
+      - name: Build production image
+        run: docker build --pull --tag jaeger-agent:${GITHUB_SHA} .
+
+      - name: Build debug image
+        run: docker build --build-arg PRODUCTION_IMAGE=jaeger-agent:${GITHUB_SHA} -f Dockerfile-debug --tag jaeger-agent:${GITHUB_SHA}-debug .
+
+      - name: Scan production image
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: jaeger-agent:${{ github.sha }}
+          scan-type: image
+          scanners: vuln
+          vuln-type: os,library
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: '1'
+          format: table
+
+      - name: Scan debug image
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: jaeger-agent:${{ github.sha }}-debug
+          scan-type: image
+          scanners: vuln
+          vuln-type: os,library
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: '1'
+          format: table

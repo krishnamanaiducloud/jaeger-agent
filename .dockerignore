@@ -1,0 +1,7 @@
+.git
+.github
+.gitignore
+k8s
+out
+reports
+*.md

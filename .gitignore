@@ -1,0 +1,4 @@
+# Build and scan output
+/out/
+/reports/
+*.tar
