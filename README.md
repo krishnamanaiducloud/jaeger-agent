@@ -26,21 +26,24 @@ patched modules, and ships it in a shell-less static runtime.
     └── container-security.yml # build both images and fail on any Trivy finding
 ```
 
-## Release 1.62.0-patched-v4
+## Release 1.62.0-patched-v5
 
-| Component | Upstream v1.62.0 | Previous `-patched-v3` | `-patched-v4` |
+| Component | Upstream v1.62.0 | Previous `-patched-v4` | `-patched-v5` |
 |---|---|---|---|
-| Go toolchain | 1.23.2 | 1.26.4 | 1.27.3 |
-| `github.com/apache/thrift` | 0.21.0 | 0.23.0 | 0.25.0 |
-| `github.com/klauspost/compress` | 1.17.10 | 1.17.10 | 1.20.3 |
-| `golang.org/x/net` | 0.30.0 | 0.55.0 | 0.61.0 |
-| `golang.org/x/text` | 0.19.0 | 0.37.0 | 0.43.0 |
-| `google.golang.org/grpc` | 1.67.1 | 1.79.3 | 1.84.0 |
-| `google.golang.org/protobuf` | 1.34.2 | | 1.36.12 |
-| Runtime base | distroless static | distroless static (Debian 13) | Chainguard static (digest-pinned) |
+| Go toolchain | 1.23.2 | 1.27.3 | 1.27.3 |
+| `github.com/apache/thrift` | 0.21.0 | 0.25.0 | 0.25.0 |
+| `github.com/klauspost/compress` | 1.17.10 | 1.20.3 | 1.20.3 |
+| `golang.org/x/net` | 0.30.0 | 0.61.0 | 0.62.0 |
+| `golang.org/x/text` | 0.19.0 | 0.43.0 | 0.43.0 |
+| `google.golang.org/grpc` | 1.67.1 | 1.84.0 | 1.84.0 |
+| `google.golang.org/protobuf` | 1.34.2 | 1.36.12 | 1.36.12 |
+| Runtime base | distroless static | Chainguard static (digest-pinned) | Chainguard static, current digest |
 
-Trivy 0.76.1 reported 22 HIGH, 15 MEDIUM and 1 LOW findings in `-patched-v3`, all in the
-agent binary. `-patched-v4` and `-patched-v4-debug` report no findings at any severity.
+`-patched-v5` rebuilds `-patched-v4` on the current digest-pinned Chainguard Go builder,
+static runtime and Wolfi debug base, and moves `golang.org/x/net` to 0.62.0 for two advisories
+published after `-patched-v4` (CVE-2026-78661, CVE-2026-97045). The agent source and runtime
+contract are unchanged: `--help` and the admin metrics are identical to `-patched-v4`. Trivy
+0.76.1 reports no findings at any severity in `-patched-v5` and `-patched-v5-debug`.
 
 The source is cloned at tag `v1.62.0` and the build fails unless it resolves to upstream
 commit `4b7446248e087edffd15508e760e8e5da044f4b4`. `go vet` and the `cmd/agent` tests run
@@ -59,7 +62,7 @@ Unchanged from earlier `-patched` tags, so existing manifests keep working:
 ## Build, scan and push
 
 ```sh
-make build-debug   # builds 1.62.0-patched-v4 and 1.62.0-patched-v4-debug
+make build-debug   # builds 1.62.0-patched-v5 and 1.62.0-patched-v5-debug
 make scan          # Trivy 0.76.1, fails on any finding
 make push
 ```

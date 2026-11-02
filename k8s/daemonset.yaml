@@ -22,7 +22,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: jaeger-agent
-          image: docker.io/mohankrishna999/jaeger-agent:1.62.0-patched-v4
+          image: docker.io/mohankrishna999/jaeger-agent:1.62.0-patched-v5
           imagePullPolicy: IfNotPresent
           args:
             # Point this at the collector gRPC endpoint for your environment.

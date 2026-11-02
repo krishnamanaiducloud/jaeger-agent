@@ -2,7 +2,7 @@
 
 # Build Vars
 IMAGENAME=mohankrishna999/jaeger-agent
-VERSION=1.62.0-patched-v4
+VERSION=1.62.0-patched-v5
 TRIVY_IMAGE=aquasec/trivy:0.76.1
 
 .DEFAULT_GOAL := all

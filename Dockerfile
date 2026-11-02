@@ -1,8 +1,8 @@
 # Patched rebuild of the upstream Jaeger agent (jaeger v1.62.0, the final agent release).
 # The agent binary is rebuilt from the verified upstream tag with a current Go toolchain
 # and patched modules, then shipped in a shell-less static runtime.
-ARG GO_IMAGE=cgr.dev/chainguard/go:latest-dev@sha256:6935d7096121c0a0ce4c26192c40bc7ed4ae9076d2567e6d46d6c32817934aff
-ARG RUNTIME_IMAGE=cgr.dev/chainguard/static:latest@sha256:c12f0107f8afb0bbc1b0eff96ff8675e85a10c6083d039b777c51fef5c27420f
+ARG GO_IMAGE=cgr.dev/chainguard/go:latest-dev@sha256:c33b2ae1b183ff001b7f2c29936c587ce1cd4ffaf9efb031bd81240f16a96504
+ARG RUNTIME_IMAGE=cgr.dev/chainguard/static:latest@sha256:fc42af33e643f20d08baf03cddcc1c02ba57052dfb02edb0d79f3fc47bcea8d9
 
 FROM ${GO_IMAGE} AS build
 ARG JAEGER_VERSION=1.62.0
@@ -39,7 +39,7 @@ RUN --mount=type=cache,id=jaeger-agent-go-mod,target=/root/go/pkg/mod,sharing=lo
 
 FROM ${RUNTIME_IMAGE}
 ARG JAEGER_VERSION=1.62.0
-ARG IMAGE_VERSION=1.62.0-patched-v4
+ARG IMAGE_VERSION=1.62.0-patched-v5
 
 LABEL org.opencontainers.image.title="jaeger-agent" \
       org.opencontainers.image.version="${IMAGE_VERSION}" \

@@ -5,4 +5,4 @@ resources:
   - service.yaml
 images:
   - name: docker.io/mohankrishna999/jaeger-agent
-    newTag: 1.62.0-patched-v4
+    newTag: 1.62.0-patched-v5
