@@ -33,6 +33,7 @@ patched modules, and ships it in a shell-less static runtime.
 | Go toolchain | 1.23.2 | 1.27.3 | 1.27.3 |
 | `github.com/apache/thrift` | 0.21.0 | 0.25.0 | 0.25.0 |
 | `github.com/klauspost/compress` | 1.17.10 | 1.20.3 | 1.20.3 |
+| `golang.org/x/crypto` | 0.28.0 | 0.58.0 | fix commit `v0.58.1-0.20261009181718-2f1f834330b2` (GO-2026-5932) |
 | `golang.org/x/net` | 0.30.0 | 0.61.0 | 0.62.0 |
 | `golang.org/x/text` | 0.19.0 | 0.43.0 | 0.43.0 |
 | `google.golang.org/grpc` | 1.67.1 | 1.84.0 | 1.84.0 |
@@ -40,10 +41,15 @@ patched modules, and ships it in a shell-less static runtime.
 | Runtime base | distroless static | Chainguard static (digest-pinned) | Chainguard static, current digest |
 
 `-patched-v5` rebuilds `-patched-v4` on the current digest-pinned Chainguard Go builder,
-static runtime and Wolfi debug base, and moves `golang.org/x/net` to 0.62.0 for two advisories
-published after `-patched-v4` (CVE-2026-78661, CVE-2026-97045). The agent source and runtime
-contract are unchanged: `--help` and the admin metrics are identical to `-patched-v4`. Trivy
-0.76.1 reports no findings at any severity in `-patched-v5` and `-patched-v5-debug`.
+static runtime and Wolfi debug base, moves `golang.org/x/net` to 0.62.0 for two advisories
+published after `-patched-v4` (CVE-2026-78661, CVE-2026-97045), and pins `golang.org/x/crypto`
+to the commit that fixes GO-2026-5932. The agent source and runtime contract are unchanged:
+the admin metrics and health endpoint are identical to `-patched-v4`.
+
+Trivy 0.76.2 reports no findings at any severity in `-patched-v5` or `-patched-v5-debug`.
+Grype 0.121.1 reports none in `-patched-v5`; in `-patched-v5-debug` it reports glibc
+CVE-2026-84243 (High), which has no fixed glibc release yet. The debug image needs glibc for its
+shell, so that finding stays until Wolfi ships a fix.
 
 The source is cloned at tag `v1.62.0` and the build fails unless it resolves to upstream
 commit `4b7446248e087edffd15508e760e8e5da044f4b4`. `go vet` and the `cmd/agent` tests run
@@ -63,7 +69,7 @@ Unchanged from earlier `-patched` tags, so existing manifests keep working:
 
 ```sh
 make build-debug   # builds 1.62.0-patched-v5 and 1.62.0-patched-v5-debug
-make scan          # Trivy 0.76.1, fails on any finding
+make scan          # Trivy 0.76.2, fails on any finding
 make push
 ```
 

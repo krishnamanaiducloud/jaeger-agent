@@ -19,7 +19,7 @@ retry() {
 retry go get \
   github.com/apache/thrift@v0.25.0 \
   github.com/klauspost/compress@v1.20.3 \
-  golang.org/x/crypto@v0.58.0 \
+  golang.org/x/crypto@v0.58.1-0.20261009181718-2f1f834330b2 \
   golang.org/x/net@v0.62.0 \
   golang.org/x/sys@v0.49.0 \
   golang.org/x/text@v0.43.0 \
@@ -33,6 +33,7 @@ retry go mod tidy -e
 for pin in \
   github.com/apache/thrift@v0.25.0 \
   github.com/klauspost/compress@v1.20.3 \
+  golang.org/x/crypto@v0.58.1-0.20261009181718-2f1f834330b2 \
   golang.org/x/net@v0.62.0 \
   golang.org/x/text@v0.43.0 \
   google.golang.org/grpc@v1.84.0; do
